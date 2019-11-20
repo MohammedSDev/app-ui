@@ -1,0 +1,2 @@
+include ':app', ':appui'
+rootProject.name='AppUiDemo'
