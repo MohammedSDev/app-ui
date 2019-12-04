@@ -8,14 +8,19 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.DialogFragment
 import com.digital.appui.*
 
+/**
+ * easy & customized app dialog
+ * you can pass you
+ * */
 class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.OnClickListener {
 
-    private var config:AppDialogConfig = AppDialogConfig()
+    private var config: AppDialogConfig =
+        AppDialogConfig()
     private var onClickListener:OnDialogViewClick? = null
     private var handlerOnAdapterClickListener:OnDialogAdapterItemClick = object : OnDialogAdapterItemClick{
         override fun invoke(view: View, position: Int) {
             onAdapterClickListener?.invoke(view,position)
-            if(config.autoAdapterDismiss != false) dismiss()
+            if(config.dismissOnAdapterItemClick) dismiss()
         }
 
     }
@@ -24,7 +29,7 @@ class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.
     private var prepareAdapterView:OnPrepareDialogAdapterView? = null
 
 
-    constructor(@LayoutRes layoutRes: Int,config:AppDialogConfig):this(layoutRes){
+    constructor(@LayoutRes layoutRes: Int,config: AppDialogConfig):this(layoutRes){
         this.config = config
     }
 
@@ -69,15 +74,15 @@ class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.
 
     override fun onClick(p0: View) {
         onClickListener?.invoke(p0,this)
-        if(config?.autoDismiss != false) dismiss()
+        if(config?.dismissOnClick) dismiss()
     }
 
-    fun onPrepareView(config: AppDialogConfig = this.config,pre:OnPrepareDialogView):AppDialog{
+    fun onPrepareView(config: AppDialogConfig = this.config, pre:OnPrepareDialogView):AppDialog{
         prepareView = pre
         this.config = config
         return this
     }
-    fun onPrepareView(config: AppDialogConfig = this.config,pre:OnPrepareDialogAdapterView):AppDialog{
+    fun onPrepareView(config: AppDialogConfig = this.config, pre:OnPrepareDialogAdapterView):AppDialog{
         prepareAdapterView = pre
         this.config = config
         return this
