@@ -51,8 +51,8 @@ class AppTextView : TextView {
     }
 
     private fun prepareAttributes(a: TypedArray) {
-        prepareCustomFontType(a)
-        prepareAppDrawable(a)
+        prepareCustomFontType(this,a)
+        prepareAppDrawable(this,a)
     }
 
 }

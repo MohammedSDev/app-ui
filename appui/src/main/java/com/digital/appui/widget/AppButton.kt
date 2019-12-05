@@ -41,7 +41,7 @@ class AppButton : Button {
     }
 
     private fun prepareAttributes(a: TypedArray) {
-        prepareCustomFontType(a)
+        prepareCustomFontType(this,a)
     }
 
 

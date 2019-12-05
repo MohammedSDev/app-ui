@@ -1,15 +1,18 @@
 package com.digital.appui
 
+import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Typeface
 import android.widget.TextView
+import java.lang.Exception
 
 /**
  * prepare textView with custom type face.
  * */
-fun TextView.prepareCustomFontType(a:TypedArray){
+fun prepareCustomFontType(textView:TextView,a:TypedArray){
     val typeFaceStr = a.getString(R.styleable.AppTextView_typeface)
-    if(typeFaceStr.isNotEmptyText())
-        setCustomTypeFace(typeFaceStr)
+    if(typeFaceStr.isNotEmpty())
+        setCustomTypeFace(textView,typeFaceStr)
 }
 
 /**
@@ -19,11 +22,34 @@ fun TextView.prepareCustomFontType(a:TypedArray){
  *         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
  * */
-fun TextView.prepareAppDrawable(a:TypedArray){
+fun prepareAppDrawable(textView:TextView,a:TypedArray){
     val drStart = a.getResourceId(R.styleable.AppTextView_drawableStart,0)
     val drEnd = a.getResourceId(R.styleable.AppTextView_drawableEnd,0)
     val drTop = a.getResourceId(R.styleable.AppTextView_drawableTop,0)
     val drBottom = a.getResourceId(R.styleable.AppTextView_drawableBottom,0)
-    setCompoundDrawablesRelativeWithIntrinsicBounds(drStart,drTop,drEnd,drBottom)
+    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(drStart,drTop,drEnd,drBottom)
 
+}
+
+
+fun setCustomTypeFace(textView:TextView,fontTypeName: String) {
+    getTypeFace(textView.context, fontTypeName)?.let { fontFace ->
+        textView.typeface = fontFace
+    }
+}
+
+
+/**
+ * get typeface for font inside assets folder.
+ * */
+fun getTypeFace(context: Context?, fontTypeName: String): Typeface? {
+    context?.let {
+        try {
+            return Typeface.createFromAsset(it.assets, fontTypeName)
+        } catch (ex: Exception) {
+            return null
+        }
+    }
+
+    return null
 }
