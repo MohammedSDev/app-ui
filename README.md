@@ -61,7 +61,7 @@ submitBtn.setOnClickListener {
 ```
 
 
-adapter example
+dialog example
 
 ```kotlin
 AppDialog(R.layout.dialog_layout)
@@ -90,7 +90,7 @@ AppDialog(R.layout.dialog_layout)
 ```
 
 
-adapter with recycler within
+recyclerView within the dialog
 
 ```kotlin
 AppDialog(R.layout.dialog_list_layout, AppDialogConfig())
