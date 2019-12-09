@@ -1,4 +1,4 @@
-# app-ktx
+# app-ui
 ![Release](https://jitpack.io/v/clickapps-android/app-ui.svg)
 
 
@@ -61,4 +61,75 @@ submitBtn.setOnClickListener {
 ```
 
 
-# Enjoy using app-ktx library,report any bugs you found,request any update ,or even drop me an email gg.goo.mobile@gmail.com
+adapter example
+
+```kotlin
+AppDialog(R.layout.dialog_layout)
+.onPrepareView { view, clickListener ->
+    get<TextView>(R.id.tvOne)
+    get<TextView>(R.id.tvOne).text = "tvOne"
+    get<TextView>(R.id.tvOne, true).text = "tvOneAfter"
+    get<TextView>(R.id.tvOne).setOnClickListener(clickListener)
+    get<TextView>(R.id.tvTwo).setOnClickListener(clickListener)
+
+}
+.onClickListener { view, dialog ->
+
+    when (view.id) {
+        R.id.tvOne -> {
+        }
+        R.id.tvTwo -> {
+        }
+        R.id.tvThree -> {
+        }
+    }
+}
+
+.show(supportFragmentManager, "AppDialog")
+
+```
+
+
+adapter with recycler within
+
+```kotlin
+AppDialog(R.layout.dialog_list_layout, AppDialogConfig())
+.onPrepareView { view, clickListener, clickAdapterListener ->
+
+    get<RecyclerView>(R.id.dialogRecycler).adapter =
+        AppAdapter<String>(R.layout.dialog_list_item) {
+            get<TextView>(R.id.tvItem1).text = "pos: $it"
+            get<TextView>(R.id.tvItem1).setOnClickListener { labelView ->
+                clickAdapterListener(labelView, adapterPosition)
+            }
+        }.also {
+            it.list = listOf("one", "two", "three", "four", "five", "six", "seven")
+        }
+    get<TextView>(R.id.tvOne)
+    get<TextView>(R.id.tvOne).text = "tvOne"
+    get<TextView>(R.id.tvOne, true).text = "tvOneAfter"
+    get<TextView>(R.id.tvOne).setOnClickListener(clickListener)
+    get<TextView>(R.id.tvTwo).setOnClickListener(clickListener)
+
+}
+.onClickListener { view, dialog ->
+
+    println("clickedView")
+    when (view.id) {
+        R.id.tvOne -> {
+        }
+        R.id.tvTwo -> {
+        }
+        R.id.tvThree -> {
+        }
+    }
+}
+.onAdapterItemClickListener { view, position ->
+    println("clicked: $position")
+}
+.show(supportFragmentManager, "AppDialog")
+```
+
+
+
+# Enjoy using app-ui library,report any bugs you found,request any update ,or even drop me an email gg.goo.mobile@gmail.com
