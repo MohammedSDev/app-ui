@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.PorterDuff
 import android.util.AttributeSet
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import com.digital.appui.R
@@ -16,26 +19,28 @@ import java.lang.Exception
  */
 class AppEditText : AppCompatEditText {
 
+    private var allowCopyPast: Boolean = true
     private var validationCB: ((isValid: Boolean, tag: Any?) -> Unit)? = null
     private var validation: (EditText.() -> Pair<Boolean, Any?>)? = null
-    private var originText:String? = null
-    private var  mAttributeSet:AttributeSet? = null
+    private var originText: String? = null
+    private var mAttributeSet: AttributeSet? = null
 
 
-    constructor(context: Context):super(context){
+    constructor(context: Context) : super(context) {
         setup(null)
     }
-    constructor(context: Context, attributeSet: AttributeSet):
-            super(context,attributeSet){
+
+    constructor(context: Context, attributeSet: AttributeSet) :
+            super(context, attributeSet) {
         mAttributeSet = attributeSet
         setup(attributeSet)
     }
-    constructor(context: Context, attributeSet: AttributeSet, defaultAttrSet: Int):
-            super(context,attributeSet,defaultAttrSet){
+
+    constructor(context: Context, attributeSet: AttributeSet, defaultAttrSet: Int) :
+            super(context, attributeSet, defaultAttrSet) {
         mAttributeSet = attributeSet
-        setup(attributeSet)}
-
-
+        setup(attributeSet)
+    }
 
 
     private fun setup(attributeSet: AttributeSet?) {
@@ -52,10 +57,9 @@ class AppEditText : AppCompatEditText {
     }
 
     private fun prepareAttributes(a: TypedArray) {
-        prepareCustomFontType(this,a)
-        prepareAppDrawable(this,a)
+        prepareCustomFontType(this, a)
+        prepareAppDrawable(this, a)
     }
-
 
 
     // --------------------
@@ -72,14 +76,14 @@ class AppEditText : AppCompatEditText {
      * */
     fun isValid(): Boolean {
         val r = validation?.invoke(this)
-        validationCB?.invoke(r?.first?:true,r?.second)
+        validationCB?.invoke(r?.first ?: true, r?.second)
         return r?.first ?: true
     }
 
     /**
      * handle validate call back
      * */
-    fun setOnValidationCB(block:(isValid:Boolean, tag:Any?)->Unit){
+    fun setOnValidationCB(block: (isValid: Boolean, tag: Any?) -> Unit) {
         this.validationCB = block
     }
 
@@ -97,13 +101,56 @@ class AppEditText : AppCompatEditText {
     /**
      * update the text has changed official.
      * */
-    fun updateTextChanged(){
+    fun updateTextChanged() {
         originText = text?.toString()
     }
 
 
-    fun setBgColoe(color:Int){
-        background.mutate().setColorFilter(color,PorterDuff.Mode.SRC_ATOP)
+    fun setBgColoe(color: Int) {
+        background.mutate().setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
     }
 
+    //-------------------------------copy-past------------------
+
+    fun disableCopyPast() {
+        allowCopyPast = false
+        customSelectionActionModeCallback = BlockActionMode()
+        isLongClickable = false
+        setTextIsSelectable(false)
+    }
+
+    fun enableCopyPast() {
+        allowCopyPast = true
+        customSelectionActionModeCallback = null//BlockActionMode()
+        isLongClickable = true
+        setTextIsSelectable(true)
+    }
+
+
+    fun canPaste(): Boolean {
+        return allowCopyPast
+    }
+
+    override fun isSuggestionsEnabled(): Boolean {
+        return allowCopyPast
+    }
+
+    private inner class BlockActionMode : ActionMode.Callback {
+        override fun onActionItemClicked(p0: ActionMode?, p1: MenuItem?): Boolean {
+            return allowCopyPast
+        }
+
+        override fun onCreateActionMode(p0: ActionMode?, p1: Menu?): Boolean {
+            return allowCopyPast
+        }
+
+        override fun onPrepareActionMode(p0: ActionMode?, p1: Menu?): Boolean {
+            return allowCopyPast
+        }
+
+        override fun onDestroyActionMode(p0: ActionMode?) {
+
+        }
+
+    }
 }
