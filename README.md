@@ -1,5 +1,5 @@
 # app-ui
-![Release](https://jitpack.io/v/clickapps-android/app-ui.svg)
+![Release](https://jitpack.io/v/MohammedSDev/app-ui.svg)
 
 
 
@@ -23,7 +23,7 @@ allprojects {
 in app level build.gradle
 ```gradle
 dependencies {
-        implementation 'com.github.clickapps-android:app-ui:<last-build>'
+        implementation 'com.github.MohammedSDev:app-ui:<last-build>'
 }
 ```
 
