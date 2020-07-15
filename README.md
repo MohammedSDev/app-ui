@@ -1,5 +1,5 @@
 # app-ui
-![Release](https://jitpack.io/v/mobile-android-libraries/app-ui.svg)
+![Release](https://jitpack.io/v/MohammedSDev/app-ui.svg)
 
 
 
@@ -23,7 +23,7 @@ allprojects {
 in app level build.gradle
 ```gradle
 dependencies {
-        implementation 'com.github.mobile-android-libraries:app-ui:<last-build>'
+        implementation 'com.github.MohammedSDev:app-ui:<last-build>'
 }
 ```
 
