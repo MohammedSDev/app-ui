@@ -31,6 +31,7 @@ dependencies {
 # an Examples
 
 
+# EditText Validations
 ```kotlin
 //set your custom validation
 phoneNumberET.setValidation {
@@ -61,7 +62,7 @@ submitBtn.setOnClickListener {
 ```
 
 
-dialog example
+# dialog example
 
 ```kotlin
 AppDialog(R.layout.dialog_layout)
@@ -90,7 +91,7 @@ AppDialog(R.layout.dialog_layout)
 ```
 
 
-recyclerView within the dialog
+# RecyclerView inside a dialog
 
 ```kotlin
 AppDialog(R.layout.dialog_list_layout, AppDialogConfig())
@@ -129,6 +130,9 @@ AppDialog(R.layout.dialog_list_layout, AppDialogConfig())
 }
 .show(supportFragmentManager, "AppDialog")
 ```
+
+
+you may also want to check App-adapter library https://github.com/mobile-android-libraries/app-adapter
 
 
 
