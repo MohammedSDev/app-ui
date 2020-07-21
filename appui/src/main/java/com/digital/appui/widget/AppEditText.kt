@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.digital.appui.R
 import com.digital.appui.prepareAppDrawable
 import com.digital.appui.prepareCustomFontType
+import com.digital.appui.utils.AppNoEmojiInputFilter
 import java.lang.Exception
 
 /**
@@ -19,12 +20,39 @@ import java.lang.Exception
  */
 class AppEditText : AppCompatEditText {
 
+    companion object {
+        /**
+         * prevent user insert emoji
+         * */
+        var DISABLE_ET_EMOJI: Boolean = false
+    }
+
     private var allowCopyPast: Boolean = true
     private var validationCB: ((isValid: Boolean, tag: Any?) -> Unit)? = null
     private var validation: (EditText.() -> Pair<Boolean, Any?>)? = null
     private var originText: String? = null
     private var mAttributeSet: AttributeSet? = null
 
+
+    var disableEmoji: Boolean? = null
+        set(value) {
+            field = value
+            when {
+                value == true && filters.find { it.javaClass == AppNoEmojiInputFilter::class.java } == null -> {
+                    this.filters += AppNoEmojiInputFilter()
+                }
+                value == false && filters.find { it.javaClass == AppNoEmojiInputFilter::class.java } != null -> {
+                    val f = filters.find { it.javaClass == AppNoEmojiInputFilter::class.java }
+                    filters = filters.toMutableList().also { list ->
+                        list.remove(f)
+                    }.toTypedArray()
+                }
+            }
+        }
+        get() {
+            return field ?: DISABLE_ET_EMOJI
+
+        }
 
     constructor(context: Context) : super(context) {
         setup(null)
@@ -54,6 +82,10 @@ class AppEditText : AppCompatEditText {
             }
             a.recycle()
         }
+
+        //
+        if (disableEmoji == true)
+            this.filters += AppNoEmojiInputFilter()
     }
 
     private fun prepareAttributes(a: TypedArray) {
