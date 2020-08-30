@@ -12,45 +12,52 @@ import com.digital.appui.*
  * easy & customized app dialog
  * you can pass you
  * */
-class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.OnClickListener {
+open class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(),
+    View.OnClickListener {
 
-    private var config: AppDialogConfig =
+    protected var config: AppDialogConfig =
         AppDialogConfig()
-    private var onClickListener:OnDialogViewClick? = null
-    private var handlerOnAdapterClickListener:OnDialogAdapterItemClick = object : OnDialogAdapterItemClick{
-        override fun invoke(view: View, position: Int) {
-            onAdapterClickListener?.invoke(view,position)
-            if(config.dismissOnAdapterItemClick) dismiss()
+    private var onClickListener: OnDialogViewClick? = null
+    private var handlerOnAdapterClickListener: OnDialogAdapterItemClick =
+        object : OnDialogAdapterItemClick {
+            override fun invoke(view: View, position: Int) {
+                onAdapterClickListener?.invoke(view, position)
+                if (config.dismissOnAdapterItemClick) dismiss()
+            }
+
         }
+    private var onAdapterClickListener: OnDialogAdapterItemClick? = null
+    private var prepareView: OnPrepareDialogView? = null
+    private var prepareAdapterView: OnPrepareDialogAdapterView? = null
+    private var viewsConfig: Boolean = false
 
-    }
-    private var onAdapterClickListener:OnDialogAdapterItemClick? = null
-    private var prepareView:OnPrepareDialogView? = null
-    private var prepareAdapterView:OnPrepareDialogAdapterView? = null
-
-
-    constructor(@LayoutRes layoutRes: Int,config: AppDialogConfig):this(layoutRes){
+    constructor(@LayoutRes layoutRes: Int, config: AppDialogConfig) : this(layoutRes) {
         this.config = config
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        onCreate()
+        configObserves()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).also {
-            println("setOnShowListener ${config == null}")
-            println("setOnShowListener ${dialog == null}")
             val config = config ?: return@also
             it.setOnShowListener {
                 println("setOnShowListener ")
                 val d = it as Dialog
                 val lp = WindowManager.LayoutParams()
                 lp.copyFrom(d.window!!.attributes)
-                lp.width = ((context?.resources?.displayMetrics?.widthPixels?:0) * config.dialogWidthSizePercent).toInt()
+                lp.width = ((context?.resources?.displayMetrics?.widthPixels
+                    ?: 0) * config.dialogWidthSizePercent).toInt()
                 lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-                if(lp.width <= 0)
+                if (lp.width <= 0)
                     lp.width = WindowManager.LayoutParams.WRAP_CONTENT
                 //set dialog bottom
                 lp.gravity = config.gravity
                 d.window?.attributes = lp
-                if(config.windowsBgColor != -1)
+                if (config.windowsBgColor != -1)
                     dialog?.window?.setBackgroundDrawable(ColorDrawable(config.windowsBgColor))//for corner radius
 
             }
@@ -62,51 +69,75 @@ class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(layoutRes,container,false)
+        return inflater.inflate(layoutRes, container, false).also {
+            viewsConfig = false
+        }
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        prepareView?.invoke(this,view,this) ?:
-        prepareAdapterView?.invoke(this,view,this,handlerOnAdapterClickListener)
+        prepareView?.invoke(this, view, this) ?: prepareAdapterView?.invoke(
+            this,
+            view,
+            this,
+            handlerOnAdapterClickListener
+        )
+        if (!viewsConfig) {
+            configUi()
+            viewsConfig = true
+        }
 
     }
 
     override fun onClick(p0: View) {
-        onClickListener?.invoke(p0,this)
-        if(config?.dismissOnClick) dismiss()
+        onClickListener?.invoke(p0, this)
+        if (config?.dismissOnClick) dismiss()
     }
 
-    fun onPrepareView(config: AppDialogConfig = this.config, pre:OnPrepareDialogView):AppDialog{
+    fun onPrepareView(config: AppDialogConfig = this.config, pre: OnPrepareDialogView): AppDialog {
         prepareView = pre
         this.config = config
         return this
     }
-    fun onPrepareView(config: AppDialogConfig = this.config, pre:OnPrepareDialogAdapterView):AppDialog{
+
+    fun onPrepareView(
+        config: AppDialogConfig = this.config,
+        pre: OnPrepareDialogAdapterView
+    ): AppDialog {
         prepareAdapterView = pre
         this.config = config
         return this
     }
 
-    fun onClickListener(onClick:OnDialogViewClick):AppDialog{
+    open fun onCreate() {
+    }
+
+    open fun configUi() {
+    }
+
+    open fun configObserves() {
+    }
+
+
+    fun onClickListener(onClick: OnDialogViewClick): AppDialog {
         onClickListener = onClick
         return this
     }
 
-    fun onAdapterItemClickListener(onClick:OnDialogAdapterItemClick):AppDialog{
+    fun onAdapterItemClickListener(onClick: OnDialogAdapterItemClick): AppDialog {
         onAdapterClickListener = onClick
         return this
     }
 
 
-
-
-
-
-
     //------------Cached functions-----------------------
-    fun <T : View> get(id: Int,fourceFind:Boolean = false): T {
-        return customFindCachedViewById(id,fourceFind) as T
+    /**
+     * @param id : view id to lock for.
+     * @param forceFind :true to always go search in the view,false to search
+     * in cache first then go throw the view.
+     * */
+    fun <T : View> get(id: Int, forceFind: Boolean = false): T {
+        return customFindCachedViewById(id, forceFind) as T
     }
 
     private var customFindViewCache: HashMap<Int, View>? = null
@@ -118,20 +149,20 @@ class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(), View.
         }
 
         var var2: View? = null
-        if(!forceFind)
+        if (!forceFind)
             var2 = customFindViewCache?.get(var1)
         if (var2 == null) {
             val var10000 = view
 
             var2 = var10000?.findViewById(var1)
-            if(var2 != null)
+            if (var2 != null)
                 customFindViewCache?.put(var1, var2)
         }
 
         return var2
     }
 
-    private fun customeClearFindViewByIdCache() {
+    fun clearFindViewByIdCache() {
         customFindViewCache?.clear()
     }
 
