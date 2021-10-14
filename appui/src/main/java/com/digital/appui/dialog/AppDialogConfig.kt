@@ -1,6 +1,7 @@
 package com.digital.appui.dialog
 
 import android.view.Gravity
+import java.io.Serializable
 
 class AppDialogConfig(
     /**
@@ -24,7 +25,7 @@ class AppDialogConfig(
      * dialog gravity
      * */
     ,var gravity:Int = Gravity.CENTER
-){
+):Serializable{
     operator fun invoke(function: AppDialogConfig.() -> Unit) {
 
     }

@@ -12,7 +12,7 @@ import com.digital.appui.*
  * easy & customized app dialog
  * you can pass you
  * */
-open class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(),
+open class AppDialog(@LayoutRes private var layoutRes: Int) : DialogFragment(),
     View.OnClickListener {
 
     protected var config: AppDialogConfig =
@@ -31,12 +31,20 @@ open class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(),
     private var prepareAdapterView: OnPrepareDialogAdapterView? = null
     private var viewsConfig: Boolean = false
 
+    constructor() : this(-1)
     constructor(@LayoutRes layoutRes: Int, config: AppDialogConfig) : this(layoutRes) {
         this.config = config
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        if (layoutRes == -1) {
+//            layoutRes = savedInstanceState?.getInt("layout_res", -1) ?: -1
+//            val serializable = savedInstanceState?.getSerializable("config")
+//            if (serializable is AppDialogConfig)
+//                config = serializable
+//        }
         onCreate()
         configObserves()
     }
@@ -64,11 +72,22 @@ open class AppDialog(@LayoutRes private val layoutRes: Int) : DialogFragment(),
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("layout_res", layoutRes)
+        outState.putSerializable("config", config)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        println("view is $view")
+        if (layoutRes == -1) {
+            dismiss()
+            return null
+        }
         return inflater.inflate(layoutRes, container, false).also {
             viewsConfig = false
         }
